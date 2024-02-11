@@ -2,8 +2,8 @@ package com.kart.order.service;
 
 import com.kart.order.dto.DiscountOrTaxDTO;
 import com.kart.order.dto.ProductDTO;
+import com.kart.order.exception.ProductException;
 import com.kart.order.helper.ProductHelper;
-import com.kart.order.mapper.ProductMapper;
 import com.kart.order.persistence.entity.ProductEntity;
 import com.kart.order.persistence.repository.ProductRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,18 +12,21 @@ import org.springframework.stereotype.Service;
 
 import java.util.Optional;
 
+import static com.kart.order.exception.ErrorCode.PRODUCT_ID_NOT_FOUND;
+
 @Slf4j
 @Service
 @RequiredArgsConstructor
 public class ProductService {
 
     private final ProductRepository productRepository;
+    private final ProductHelper productHelper;
 
     public ProductEntity addProduct(ProductDTO productDTO) {
         log.info("Adding a Product with name={}...", productDTO.name());
         Double finalPrice = productDTO.price();
         if (productDTO.hasOptional()) {
-            finalPrice = ProductHelper.finalPrice(
+            finalPrice = productHelper.finalPrice(
                     productDTO.price(),
                     productDTO.optional().get().discountOrTax(),
                     productDTO.optional().get().applicableValue()
@@ -45,7 +48,7 @@ public class ProductService {
         Optional<ProductEntity> productEntity = productRepository.findById(id);
         if (productEntity.isEmpty()) {
             log.error("Product with id={} does not exist.", id);
-            // Need to throw an exception
+            throw new ProductException(PRODUCT_ID_NOT_FOUND.name(), PRODUCT_ID_NOT_FOUND.getErrorMessage());
         }
         log.info("Fetched a Product with id={}!", id);
         return productEntity.get();
@@ -56,8 +59,7 @@ public class ProductService {
         boolean isExists = productRepository.existsById(productEntity.getId());
         if (!isExists) {
             log.error("Product with id={} does not exist.", productEntity.getId());
-            // Need to throw an exception
-            return false;
+            throw new ProductException(PRODUCT_ID_NOT_FOUND.name(), PRODUCT_ID_NOT_FOUND.getErrorMessage());
         }
         productEntity = productRepository.save(productEntity);
         log.info("updated the following product with id={}!", productEntity.getId());
@@ -69,8 +71,7 @@ public class ProductService {
         boolean isExists = productRepository.existsById(id);
         if (!isExists) {
             log.error("Product with id={} does not exist.", id);
-            // Need to throw an exception
-            return false;
+            throw new ProductException(PRODUCT_ID_NOT_FOUND.name(), PRODUCT_ID_NOT_FOUND.getErrorMessage());
         }
         productRepository.deleteById(id);
         log.info("Deleted the following product with id={}!", id);
@@ -82,10 +83,9 @@ public class ProductService {
         ProductEntity productEntity = productRepository.findById(discountOrTaxDTO.id()).get();
         if (productEntity == null) {
             log.error("Product with id={} does not exist.", discountOrTaxDTO.id());
-            // Need to throw an exception
-            return false;
+            throw new ProductException(PRODUCT_ID_NOT_FOUND.name(), PRODUCT_ID_NOT_FOUND.getErrorMessage());
         }
-        Double finalPrice = ProductHelper.finalPrice(
+        Double finalPrice = productHelper.finalPrice(
                 productEntity.getPrice(),
                 discountOrTaxDTO.discountOrTax(),
                 discountOrTaxDTO.applicableValue()
