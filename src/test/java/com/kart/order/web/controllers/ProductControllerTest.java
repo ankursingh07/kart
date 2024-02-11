@@ -83,7 +83,7 @@ public class ProductControllerTest {
 
     @Test
     void discountOrTax() throws Exception {
-        when(productService.discountOrTax(any())).thenReturn(true);
+        when(productService.discountOrTax(any())).thenReturn(getProductEntity());
         DiscountOrTaxDTO request = getDiscountOrTaxDTO();
 
         ObjectMapper objectMapper = new ObjectMapper();

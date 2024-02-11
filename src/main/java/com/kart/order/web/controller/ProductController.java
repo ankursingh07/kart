@@ -42,8 +42,8 @@ public class ProductController {
     }
 
     @PostMapping(consumes = "application/json", value = "/alter")
-    public String implementDiscountOrTax(@Valid @RequestBody DiscountOrTaxDTO discountOrTaxDTO) {
-        boolean isUpdated = productService.discountOrTax(discountOrTaxDTO);
-        return isUpdated ? "Changes made successfully" : "Error occurred!";
+    public ProductEntity implementDiscountOrTax(@Valid @RequestBody DiscountOrTaxDTO discountOrTaxDTO) {
+        ProductEntity productEntity = productService.discountOrTax(discountOrTaxDTO);
+        return productEntity;
     }
 }

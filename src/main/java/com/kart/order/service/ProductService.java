@@ -44,7 +44,7 @@ public class ProductService {
     }
 
     public ProductEntity getProduct(Long id) {
-        log.info("Fetching a Product with id={}...", id);
+        log.info("Searching for a Product with id={}...", id);
         Optional<ProductEntity> productEntity = productRepository.findById(id);
         if (productEntity.isEmpty()) {
             log.error("Product with id={} does not exist.", id);
@@ -78,8 +78,8 @@ public class ProductService {
         return true;
     }
 
-    public boolean discountOrTax(DiscountOrTaxDTO discountOrTaxDTO) {
-        log.info("Finding a Product with id={}...", discountOrTaxDTO.id());
+    public ProductEntity discountOrTax(DiscountOrTaxDTO discountOrTaxDTO) {
+        log.info("Searching for a Product with id={}...", discountOrTaxDTO.id());
         ProductEntity productEntity = productRepository.findById(discountOrTaxDTO.id()).get();
         if (productEntity == null) {
             log.error("Product with id={} does not exist.", discountOrTaxDTO.id());
@@ -92,7 +92,7 @@ public class ProductService {
         );
         productEntity.setPrice(finalPrice);
         productEntity = productRepository.save(productEntity);
-        log.info("updated the following product with id={}!", productEntity.getId());
-        return true;
+        log.info("updated the product price with id={}!", productEntity.getId());
+        return productEntity;
     }
 }

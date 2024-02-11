@@ -63,7 +63,7 @@ public class ProductServiceTest {
         when(productRepository.findById(any())).thenReturn(Optional.ofNullable(getProductEntity()));
         when(productHelper.finalPrice(any(),any(),any())).thenReturn(7.77);
         when(productRepository.save(any())).thenReturn(getProductEntity());
-        boolean updated = productService.discountOrTax(getDiscountOrTaxDTO());
-        assertEquals(true, updated);
+        ProductEntity productEntity = productService.discountOrTax(getDiscountOrTaxDTO());
+        assertEquals("test-name", productEntity.getName());
     }
 }
